@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Lucuu</title>
+
+<style>
+body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#f8cdda,#FFE9F2);
+    font-family:Georgia, serif;
+    color:#6b2c4f;
+}
+
+.card{
+    width:340px;
+    background:#fff0f6;
+    border:17px solid #f4a7c1;
+    border-radius:20px;
+    padding:18px;
+    box-shadow:0 0 30px rgba(244,167,193,0.45);
+}
+
+/* VIDEO FRAME */
+.photo-frame{
+    position:relative;
+    border:3px solid #f4a7c1;
+    border-radius:16px;
+    overflow:hidden;
+    margin-bottom:15px;
+}
+
+.photo-frame video{
+    width:100%;
+    display:block;
+}
+
+canvas{
+    position:absolute;
+    top:0;
+    left:0;
+}
+
+/* LIRIK */
+.lyrics{
+    min-height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:10px;
+    border:1px solid #f4a7c1;
+    border-radius:12px;
+    background:rgba(244,167,193,0.18);
+    margin-bottom:14px;
+    font-size:15px;
+}
+
+/* TOMBOL */
+button{
+    width:40%;
+    padding:10px;
+    border:none;
+    border-radius:52px;
+    background:linear-gradient(135deg,#f4a7c1,#fbd1e4);
+    color:#6b2c4f;
+    font-weight:bold;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <!-- VIDEO -->
+    <div class="photo-frame">
+        <video id="video" src="lv_7335062319459798290_20260117200616.mp4" muted loop playsinline></video>
+        <canvas id="pixelCanvas"></canvas>
+    </div>
+
+    <!-- LIRIK -->
+    <div class="lyrics" id="lyricsBox">
+        Tekan play lalu usap video ✨
+    </div>
+
+    <!-- AUDIO -->
+    <audio id="audio" src="1f6acc89b7ca.mp3"></audio>
+
+    <button onclick="playSong()">▶ Playyy</button>
+</div>
+
+<script>
+/* ===== LIRIK ===== */
+const lyrics = [
+  { text:"☕you're the coffee that I need in the morning☕", delay:4000 },
+  { text:"🌻you're my sunshine in the rain when it's pouring🌻", delay:3500 },
+  { text:"🌹won't you give yourself to me🌹", delay:3000 },
+  { text:"🌸give it all, oh🌸", delay:4000 },
+  
+];
+
+let i = 0, timer;
+
+function playSong(){
+    const audio = document.getElementById("audio");
+    const video = document.getElementById("video");
+    const box = document.getElementById("lyricsBox");
+
+    audio.currentTime = 0;
+    audio.play();
+    video.play();
+
+    i = 0;
+    clearTimeout(timer);
+    showLyrics();
+
+    function showLyrics(){
+        if(i >= lyrics.length) return;
+        box.innerText = lyrics[i].text;
+        timer = setTimeout(()=>{
+            i++;
+            showLyrics();
+        }, lyrics[i].delay);
+    }
+}
+
+/* ===== SCRATCH REVEAL VIDEO ===== */
+const canvas = document.getElementById("pixelCanvas");
+const ctx = canvas.getContext("2d");
+const video = document.getElementById("video");
+
+let drawing = false;
+
+video.onloadeddata = () => {
+    canvas.width = video.clientWidth;
+    canvas.height = video.clientHeight;
+    ctx.fillStyle = "#f4a7c1";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+};
+
+/* MOUSE */
+canvas.addEventListener("mousedown", ()=> drawing = true);
+canvas.addEventListener("mouseup", ()=> drawing = false);
+canvas.addEventListener("mousemove", e=>{
+    if(!drawing) return;
+    const r = canvas.getBoundingClientRect();
+    ctx.clearRect(e.clientX-r.left-14, e.clientY-r.top-20, 34, 34);
+});
+
+/* TOUCH */
+canvas.addEventListener("touchstart", e=>{
+    drawing = true;
+    e.preventDefault();
+});
+canvas.addEventListener("touchend", ()=> drawing = false);
+canvas.addEventListener("touchmove", e=>{
+    if(!drawing) return;
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches[0];
+    ctx.clearRect(t.clientX-r.left-14, t.clientY-r.top-45, 61, 61);
+});
+</script>
+
+</body>
+</html>
